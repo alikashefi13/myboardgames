@@ -1,18 +1,18 @@
 {
     "project": {
-        "name": "mybgg",
-        "title": ""
+        "name": "بردگیم های خودم",
+        "title": "بردگیم"
     },
     "boardgamegeek": {
-        "user_name": "YOUR_BGG_USERNAME",
+        "user_name": "alik13722",
         "extra_params": {
             "own": 1
         }
     },
     "algolia": {
-        "app_id": "YOUR_APP_ID",
-        "api_key_search_only": "YOUR_PUBLIC_API_KEY",
-        "index_name": "YOUR_INDEX_NAME",
-        "hits_per_page": 24
+        "app_id": "GP61VA0PCM",
+        "api_key_search_only": "fbe444d1c8005e5ab5ce96ae03e0c296",
+        "index_name": "mygames",
+        "hits_per_page": 10
     }
 }
