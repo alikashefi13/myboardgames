@@ -1,43 +1,18 @@
-import json
-import argparse
-import os
-import sys
-
-def load_config(config_path):
-    if not os.path.exists(config_path):
-        print(f"❌ فایل پیکربندی پیدا نشد: {config_path}")
-        sys.exit(1)
-
-    try:
-        with open(config_path, "r", encoding="utf-8") as f:
-            content = f.read().strip()
-            if not content:
-                print("❌ فایل پیکربندی خالیه!")
-                sys.exit(1)
-            return json.loads(content)
-    except json.JSONDecodeError as e:
-        print(f"❌ خطا در بارگذاری JSON: {e}")
-        sys.exit(1)
-    except Exception as e:
-        print(f"❌ خطای غیرمنتظره در خواندن پیکربندی: {e}")
-        sys.exit(1)
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--config", required=True, help="آدرس فایل پیکربندی JSON")
-    parser.add_argument("--apikey", required=True, help="کلید API برای اتصال")
-    parser.add_argument("--debug", action="store_true", help="فعال‌سازی حالت دیباگ")
-    args = parser.parse_args()
-
-    # بارگذاری تنظیمات از فایل config
-    settings = load_config(args.config)
-
-    if args.debug:
-        print("✅ تنظیمات لود شد:")
-        print(json.dumps(settings, indent=2, ensure_ascii=False))
-        print(f"🔑 کلید API دریافتی: {'*' * len(args.apikey)}")
-
-    # ادامه‌ی پردازش با settings و apikey...
-
-if __name__ == "__main__":
-    main()
+{
+    "project": {
+        "name": "بردگیم های خودم",
+        "title": "بردگیم"
+    },
+    "boardgamegeek": {
+        "user_name": "alik13722",
+        "extra_params": {
+            "own": 1
+        }
+    },
+    "algolia": {
+        "app_id": "GP61VA0PCM",
+        "api_key_search_only": "fbe444d1c8005e5ab5ce96ae03e0c296",
+        "index_name": "mygames",
+        "hits_per_page": 20
+    }
+}
