@@ -1,18 +1,74 @@
-{
-    "project": {
-        "name": "بردگیم های خودم",
-        "title": "بردگیم"
-    },
-    "boardgamegeek": {
-        "user_name": "alik13722",
-        "extra_params": {
-            "own": 1
-        }
-    },
-    "algolia": {
-        "app_id": "GP61VA0PCM",
-        "api_key_search_only": "fbe444d1c8005e5ab5ce96ae03e0c296",
-        "index_name": "mygames",
-        "hits_per_page": 20
-    }
+// فایل: MyBoardgames.jsx
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
+
+export default function MyBoardgames() {
+  const [games, setGames] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        const response = await axios.get("/api/mygames"); // اینجا آدرس APIت رو بزن
+        setGames(response.data);
+      } catch (error) {
+        console.error("خطا در گرفتن اطلاعات:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGames();
+  }, []);
+
+  const filteredGames = games.filter((game) =>
+    game.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] to-[#1e293b] text-white p-6">
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6 text-center">🎲 بردگیم‌های من</h1>
+
+        <div className="mb-6">
+          <Input
+            placeholder="جستجوی بازی..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full bg-slate-800 text-white placeholder-gray-400"
+          />
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <Loader2 className="animate-spin w-10 h-10 text-blue-400" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredGames.map((game) => (
+              <Card
+                key={game.id}
+                className="bg-slate-800 border border-slate-700 hover:border-blue-400 transition"
+              >
+                <CardContent className="p-4">
+                  <img
+                    src={game.image || "/placeholder.jpg"}
+                    alt={game.name}
+                    className="w-full h-48 object-cover rounded-md mb-4"
+                  />
+                  <h2 className="text-xl font-semibold">{game.name}</h2>
+                  <p className="text-sm text-gray-400 mt-2">سال: {game.year}</p>
+                  <p className="text-sm text-gray-400">رتبه: {game.rank}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
