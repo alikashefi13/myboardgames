@@ -1,74 +1,43 @@
-// فایل: MyBoardgames.jsx
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import json
+import argparse
+import os
+import sys
 
-export default function MyBoardgames() {
-  const [games, setGames] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+def load_config(config_path):
+    if not os.path.exists(config_path):
+        print(f"❌ فایل پیکربندی پیدا نشد: {config_path}")
+        sys.exit(1)
 
-  useEffect(() => {
-    const fetchGames = async () => {
-      try {
-        const response = await axios.get("/api/mygames"); // اینجا آدرس APIت رو بزن
-        setGames(response.data);
-      } catch (error) {
-        console.error("خطا در گرفتن اطلاعات:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    try:
+        with open(config_path, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+            if not content:
+                print("❌ فایل پیکربندی خالیه!")
+                sys.exit(1)
+            return json.loads(content)
+    except json.JSONDecodeError as e:
+        print(f"❌ خطا در بارگذاری JSON: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"❌ خطای غیرمنتظره در خواندن پیکربندی: {e}")
+        sys.exit(1)
 
-    fetchGames();
-  }, []);
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", required=True, help="آدرس فایل پیکربندی JSON")
+    parser.add_argument("--apikey", required=True, help="کلید API برای اتصال")
+    parser.add_argument("--debug", action="store_true", help="فعال‌سازی حالت دیباگ")
+    args = parser.parse_args()
 
-  const filteredGames = games.filter((game) =>
-    game.name.toLowerCase().includes(search.toLowerCase())
-  );
+    # بارگذاری تنظیمات از فایل config
+    settings = load_config(args.config)
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] to-[#1e293b] text-white p-6">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-center">🎲 بردگیم‌های من</h1>
+    if args.debug:
+        print("✅ تنظیمات لود شد:")
+        print(json.dumps(settings, indent=2, ensure_ascii=False))
+        print(f"🔑 کلید API دریافتی: {'*' * len(args.apikey)}")
 
-        <div className="mb-6">
-          <Input
-            placeholder="جستجوی بازی..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-800 text-white placeholder-gray-400"
-          />
-        </div>
+    # ادامه‌ی پردازش با settings و apikey...
 
-        {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <Loader2 className="animate-spin w-10 h-10 text-blue-400" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredGames.map((game) => (
-              <Card
-                key={game.id}
-                className="bg-slate-800 border border-slate-700 hover:border-blue-400 transition"
-              >
-                <CardContent className="p-4">
-                  <img
-                    src={game.image || "/placeholder.jpg"}
-                    alt={game.name}
-                    className="w-full h-48 object-cover rounded-md mb-4"
-                  />
-                  <h2 className="text-xl font-semibold">{game.name}</h2>
-                  <p className="text-sm text-gray-400 mt-2">سال: {game.year}</p>
-                  <p className="text-sm text-gray-400">رتبه: {game.rank}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+if __name__ == "__main__":
+    main()
